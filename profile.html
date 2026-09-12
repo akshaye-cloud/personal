@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Akshay E — Associate Product Manager, Product Strategy, B2B SaaS, Customer Discovery and AI Product Development." />
+  <title>Akshay E — Product Manager</title>
+
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: rgba(255,255,255,.82);
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #647084;
+      --line: #e4e8ef;
+      --blue: #1a73e8;
+      --blue-soft: #eaf2ff;
+      --green: #188038;
+      --green-soft: #e8f5e9;
+      --orange: #f9ab00;
+      --orange-soft: #fff6df;
+      --purple: #7b61ff;
+      --purple-soft: #f0edff;
+      --shadow: 0 18px 50px rgba(25, 39, 66, .08);
+      --radius: 24px;
+      --max: 1120px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 90% 0%, rgba(26,115,232,.10), transparent 28rem),
+        radial-gradient(circle at 0% 20%, rgba(123,97,255,.08), transparent 25rem),
+        var(--bg);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+    .container { width: min(calc(100% - 40px), var(--max)); margin: 0 auto; }
+
+    /* Navigation */
+    .nav-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: 14px 20px;
+      background: rgba(248,250,252,.72);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(228,232,239,.7);
+    }
+
+    nav {
+      width: min(100%, var(--max));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: linear-gradient(135deg, #1a73e8, #7b61ff);
+      box-shadow: 0 8px 18px rgba(26,115,232,.22);
+      font-size: 14px;
+    }
+
+    .nav-links { display: flex; gap: 6px; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 650;
+      padding: 8px 11px;
+      border-radius: 10px;
+    }
+    .nav-links a:hover { background: white; color: var(--text); }
+
+    /* Hero */
+    .hero {
+      padding: 92px 0 78px;
+      min-height: 650px;
+      display: grid;
+      align-items: center;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.45fr .75fr;
+      gap: 72px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 11px;
+      border: 1px solid #dce6f7;
+      background: rgba(255,255,255,.75);
+      border-radius: 999px;
+      color: #45617f;
+      font-size: 13px;
+      font-weight: 750;
+      margin-bottom: 22px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 4px var(--green-soft);
+    }
+
+    h1 {
+      font-size: clamp(48px, 7vw, 82px);
+      line-height: .98;
+      letter-spacing: -.065em;
+      margin: 0 0 24px;
+      max-width: 780px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, #1a73e8 5%, #6d5dfc 55%, #188038 95%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-copy {
+      font-size: clamp(18px, 2vw, 22px);
+      color: var(--muted);
+      max-width: 720px;
+      margin: 0 0 30px;
+    }
+
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 12px 17px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 750;
+      border: 1px solid var(--line);
+      background: white;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(25,39,66,.09); }
+    .btn-primary { background: var(--text); color: white; border-color: var(--text); }
+
+    .hero-card {
+      position: relative;
+      min-height: 330px;
+      border: 1px solid rgba(255,255,255,.9);
+      background: linear-gradient(145deg, rgba(255,255,255,.95), rgba(241,246,255,.82));
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      padding: 30px;
+    }
+
+    .hero-card::before,
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(1px);
+    }
+    .hero-card::before {
+      width: 170px; height: 170px;
+      background: rgba(26,115,232,.13);
+      right: -55px; top: -45px;
+    }
+    .hero-card::after {
+      width: 120px; height: 120px;
+      background: rgba(123,97,255,.12);
+      left: -45px; bottom: -35px;
+    }
+
+    .initials {
+      width: 82px;
+      height: 82px;
+      display: grid;
+      place-items: center;
+      border-radius: 25px;
+      background: var(--text);
+      color: white;
+      font-size: 27px;
+      font-weight: 850;
+      letter-spacing: -.04em;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 72px;
+    }
+
+    .stat {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
+      margin-bottom: 5px;
+    }
+    .stat strong { font-size: 38px; line-height: 1; letter-spacing: -.05em; }
+    .stat span { color: var(--muted); font-size: 14px; font-weight: 650; }
+
+    .hero-card small { color: var(--muted); }
+
+    /* General */
+    section { padding: 92px 0; }
+    .section-head { margin-bottom: 42px; max-width: 720px; }
+    .kicker {
+      color: var(--blue);
+      text-transform: uppercase;
+      letter-spacing: .13em;
+      font-size: 12px;
+      font-weight: 850;
+      margin-bottom: 9px;
+    }
+    h2 {
+      margin: 0;
+      font-size: clamp(32px, 4vw, 48px);
+      line-height: 1.08;
+      letter-spacing: -.045em;
+    }
+    .section-intro { color: var(--muted); font-size: 17px; margin: 14px 0 0; }
+
+    /* About / capabilities */
+    .about-grid {
+      display: grid;
+      grid-template-columns: .8fr 1.2fr;
+      gap: 26px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 30px;
+      box-shadow: 0 8px 30px rgba(25,39,66,.035);
+    }
+
+    .quote-panel {
+      background: var(--text);
+      color: white;
+      border-color: var(--text);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 300px;
+    }
+    .quote {
+      font-size: 25px;
+      line-height: 1.3;
+      letter-spacing: -.025em;
+      margin: 0;
+    }
+    .quote-label { color: #b9c6d8; font-size: 13px; margin-top: 25px; }
+
+    .capabilities {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .cap {
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      padding: 18px;
+      background: #fcfdff;
+    }
+    .cap-icon {
+      width: 34px; height: 34px;
+      display: grid; place-items: center;
+      border-radius: 10px;
+      margin-bottom: 14px;
+      font-size: 15px;
+      font-weight: 850;
+    }
+    .cap:nth-child(1) .cap-icon { background: var(--blue-soft); color: var(--blue); }
+    .cap:nth-child(2) .cap-icon { background: var(--green-soft); color: var(--green); }
+    .cap:nth-child(3) .cap-icon { background: var(--orange-soft); color: #b77900; }
+    .cap:nth-child(4) .cap-icon { background: var(--purple-soft); color: var(--purple); }
+    .cap h3 { font-size: 15px; margin: 0 0 4px; }
+    .cap p { font-size: 13px; color: var(--muted); margin: 0; }
+
+    /* Experience */
+    .experience-list { display: grid; gap: 18px; }
+
+    .experience {
+      position: relative;
+      display: grid;
+      grid-template-columns: 205px 1fr;
+      gap: 30px;
+      padding: 30px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .experience-date {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1.5;
+    }
+    .experience-date .company {
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 800;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .role {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .role h3 { margin: 0; font-size: 22px; letter-spacing: -.025em; }
+    .role-tag {
+      flex: 0 0 auto;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .experience ul {
+      margin: 18px 0 0;
+      padding-left: 19px;
+      color: var(--muted);
+    }
+    .experience li { padding: 5px 0; }
+    .metric {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 7px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-weight: 800;
+      font-size: .88em;
+    }
+
+    /* Skills */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .skill {
+      padding: 20px;
+      border-radius: 18px;
+      background: white;
+      border: 1px solid var(--line);
+      font-weight: 700;
+    }
+    .skill span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* Education */
+    .education-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+    .education-card {
+      padding: 28px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+    .education-card .type {
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+    .education-card h3 { margin: 10px 0 4px; font-size: 20px; }
+    .education-card p { margin: 0; color: var(--muted); }
+
+    /* Certifications */
+    .certs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .cert {
+      background: white;
+      border: 1px solid var(--line);
+      padding: 12px 15px;
+      border-radius: 13px;
+      color: #435066;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    /* Contact */
+    .contact {
+      padding-bottom: 70px;
+    }
+    .contact-card {
+      padding: clamp(30px, 6vw, 60px);
+      border-radius: 32px;
+      background: linear-gradient(135deg, #172033, #243b55);
+      color: white;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 30px;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .contact-card::after {
+      content: "";
+      position: absolute;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.08);
+      right: -120px;
+      top: -150px;
+    }
+    .contact-card h2 { position: relative; z-index: 1; }
+    .contact-card p { color: #b9c6d8; margin: 12px 0 0; max-width: 650px; position: relative; z-index: 1; }
+    .contact-links { display: flex; gap: 10px; flex-wrap: wrap; position: relative; z-index: 2; }
+    .contact-links a {
+      background: white;
+      color: var(--text);
+      padding: 12px 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    footer {
+      padding: 0 0 38px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 820px) {
+      .nav-links { display: none; }
+      .hero { padding-top: 62px; min-height: auto; }
+      .hero-grid, .about-grid, .contact-card { grid-template-columns: 1fr; }
+      .hero-grid { gap: 35px; }
+      .hero-card { min-height: 260px; }
+      .initials { margin-bottom: 45px; }
+      .experience { grid-template-columns: 1fr; gap: 12px; }
+      .skills-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 560px) {
+      .container { width: min(calc(100% - 28px), var(--max)); }
+      section { padding: 68px 0; }
+      h1 { font-size: 51px; }
+      .capabilities, .skills-grid, .education-grid { grid-template-columns: 1fr; }
+      .panel, .experience, .education-card { padding: 22px; }
+      .role { display: block; }
+      .role-tag { display: inline-block; margin-top: 10px; }
+      .contact-card { border-radius: 24px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="nav-wrap">
+    <nav>
+      <a class="brand" href="#top" aria-label="Akshay E home">
+        <span class="brand-mark">AE</span>
+        <span>Akshay E</span>
+      </a>
+      <div class="nav-links" aria-label="Main navigation">
+        <a href="#about">About</a>
+        <a href="#experience">Experience</a>
+        <a href="#skills">Skills</a>
+        <a href="#education">Education</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow"><span class="dot"></span> Associate Product Manager · Chennai, India</div>
+          <h1>Building products that turn <span class="gradient-text">real problems</span> into measurable impact.</h1>
+          <p class="hero-copy">
+            Product strategy, customer discovery, B2B SaaS and AI-assisted product development —
+            with a foundation in software engineering.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#experience">Explore my work →</a>
+            <a class="btn" href="mailto:akshay.eswar98@gmail.com">Get in touch</a>
+            <a class="btn" href="https://www.linkedin.com/in/akshay-eswaraiah" target="_blank" rel="noopener">LinkedIn ↗</a>
+          </div>
+        </div>
+
+        <aside class="hero-card" aria-label="Profile highlight">
+          <div class="initials">AE</div>
+          <div class="stat"><strong>5+</strong><span>years across engineering & product</span></div>
+          <small>Product Lead & Ex-Founder · Inventra.io</small>
+        </aside>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="container">
+        <div class="section-head">
+          <div class="kicker">Profile</div>
+          <h2>Product thinking grounded in customer problems.</h2>
+          <p class="section-intro">A concise view of the experience, strengths and product philosophy described in the profile.</p>
+        </div>
+
+        <div class="about-grid">
+          <div class="panel quote-panel">
+            <p class="quote">“Build customer-centric products, collaborate cross-functionally, and create measurable business impact.”</p>
+            <div class="quote-label">Current career direction</div>
+          </div>
+
+          <div class="panel">
+            <div class="capabilities">
+              <div class="cap">
+                <div class="cap-icon">01</div>
+                <h3>Product Strategy & Vision</h3>
+                <p>Turning customer and business needs into product direction.</p>
+              </div>
+              <div class="cap">
+                <div class="cap-icon">02</div>
+                <h3>Customer Discovery</h3>
+                <p>20+ discovery interviews across multiple states to uncover high-impact problems.</p>
+              </div>
+              <div class="cap">
+                <div class="cap-icon">03</div>
+                <h3>Roadmaps & PRDs</h3>
+                <p>Planning and prioritising product work across complex B2B workflows.</p>
+              </div>
+              <div class="cap">
+                <div class="cap-icon">04</div>
+                <h3>AI-assisted Development</h3>
+                <p>Rapidly prototyping product features with no-code platforms and customer feedback.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="experience">
+      <div class="container">
+        <div class="section-head">
+          <div class="kicker">Experience</div>
+          <h2>From software reliability to owning product outcomes.</h2>
+          <p class="section-intro">A career progression from engineering into product leadership and entrepreneurship.</p>
+        </div>
+
+        <div class="experience-list">
+          <article class="experience">
+            <div class="experience-date">
+              <span class="company">Inventra.io</span>
+              Sep 2023 — Feb 2026<br />
+              Chennai · 2 years 6 months
+            </div>
+            <div>
+              <div class="role">
+                <h3>Product Lead & Ex-Founder</h3>
+                <span class="role-tag">B2B SaaS · ERP</span>
+              </div>
+              <ul>
+                <li>Conducted 20+ customer discovery interviews, identifying four high-impact operational challenges that shaped the MVP and product roadmap.</li>
+                <li>Led product strategy, roadmap planning, PRDs, and feature prioritisation across 15+ ERP workflows including inventory, GST invoicing, billing, payments, CRM, and supplier management.</li>
+                <li>Designed workflow automation projected to reduce manual payment follow-ups by <span class="metric">~70%</span> and administrative effort by <span class="metric">~60%</span>.</li>
+                <li>Rapidly prototyped AI-assisted product features using no-code platforms, accelerating MVP validation through continuous customer feedback.</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="experience">
+            <div class="experience-date">
+              <span class="company">iOPEX Technologies</span>
+              Mar 2021 — Aug 2023<br />
+              Chennai · 2 years 6 months
+            </div>
+            <div>
+              <div class="role">
+                <h3>Software Engineer</h3>
+                <span class="role-tag">Engineering</span>
+              </div>
+              <ul>
+                <li>Executed reliability and system testing for distributed applications, ensuring production readiness.</li>
+                <li>Supported deployment validation and incident analysis, fostering effective cross-team communication.</li>
+                <li>Improved release quality by collaborating with teams, leading to a significant enhancement in system performance.</li>
+              </ul>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills">
+      <div class="container">
+        <div class="section-head">
+          <div class="kicker">Toolkit</div>
+          <h2>Core strengths.</h2>
+        </div>
+        <div class="skills-grid">
+          <div class="skill">Product Strategy & Vision<span>Direction · Discovery · Outcomes</span></div>
+          <div class="skill">Customer Discovery & User Research<span>Interviews · Pain points · Validation</span></div>
+          <div class="skill">Product Roadmaps & PRDs<span>Planning · Documentation · Prioritisation</span></div>
+          <div class="skill">Feature Prioritization<span>Trade-offs · MVP thinking · Roadmaps</span></div>
+          <div class="skill">B2B SaaS<span>ERP · Business workflows · Operations</span></div>
+          <div class="skill">AI-assisted Product Development<span>No-code prototyping · Iteration</span></div>
+          <div class="skill">Workflow Automation<span>Operational efficiency · Process design</span></div>
+          <div class="skill">SQL & AWS Fundamentals<span>Technical foundation · Cloud concepts</span></div>
+          <div class="skill">Cross-functional Collaboration<span>Engineering · Product · Stakeholders</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="education">
+      <div class="container">
+        <div class="section-head">
+          <div class="kicker">Learning</div>
+          <h2>Education & certifications.</h2>
+        </div>
+
+        <div class="education-grid">
+          <article class="education-card">
+            <div class="type">Bachelor's Degree</div>
+            <h3>Sri Sairam Engineering College</h3>
+            <p>Bachelor of Engineering — BE, Computer Science</p>
+            <p>July 2016 — September 2020</p>
+          </article>
+
+          <article class="education-card">
+            <div class="type">Product Management</div>
+            <h3>HelloPM</h3>
+            <p>AI Product Management Program</p>
+            <p>July 2026</p>
+          </article>
+        </div>
+
+        <div style="height: 18px"></div>
+
+        <div class="panel">
+          <div class="kicker">Certifications</div>
+          <div class="certs">
+            <span class="cert">Performing a Basic Audit of your AWS Environment</span>
+            <span class="cert">Introduction to Amazon CloudFront</span>
+            <span class="cert">Introduction to AWS Lambda</span>
+            <span class="cert">Amazon Web Services Cloud Practitioner</span>
+            <span class="cert">Introduction to Data and Data Science</span>
+          </div>
+        </div>
+
+        <div style="height: 24px"></div>
+
+        <div class="panel">
+          <div class="kicker">Top Skills</div>
+          <div class="certs">
+            <span class="cert">B2B SaaS</span>
+            <span class="cert">Cross-functional Collaborations</span>
+            <span class="cert">User Stories</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="contact">
+      <div class="container">
+        <div class="contact-card">
+          <div>
+            <div class="kicker" style="color:#8ab4f8">Let's connect</div>
+            <h2>Interested in building useful products together?</h2>
+            <p>
+              I'm currently looking for opportunities where I can build customer-centric products,
+              collaborate with cross-functional teams, and create measurable business impact.
+            </p>
+          </div>
+          <div class="contact-links">
+            <a href="mailto:akshay.eswar98@gmail.com">Email me</a>
+            <a href="https://www.linkedin.com/in/akshay-eswaraiah" target="_blank" rel="noopener">LinkedIn ↗</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Akshay E · Product · B2B SaaS · AI
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
