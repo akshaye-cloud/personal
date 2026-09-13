@@ -1,0 +1,2291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG Simulator — Learn Retrieval-Augmented Generation</title>
+
+<style>
+:root{
+  --bg:#f5f7fb;
+  --card:#ffffff;
+  --text:#172033;
+  --muted:#6d7890;
+  --line:#e5e9f2;
+  --primary:#635bff;
+  --primary2:#8b5cf6;
+  --blue:#2563eb;
+  --cyan:#0891b2;
+  --green:#16a34a;
+  --orange:#ea580c;
+  --red:#dc2626;
+  --shadow:0 12px 35px rgba(30,40,70,.08);
+  --radius:18px;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 10% 0%,rgba(99,91,255,.10),transparent 30%),
+    radial-gradient(circle at 90% 5%,rgba(14,165,233,.08),transparent 25%),
+    var(--bg);
+  color:var(--text);
+}
+
+/* ---------------- HEADER ---------------- */
+
+.header{
+  background:
+    radial-gradient(circle at 20% 20%,rgba(99,91,255,.35),transparent 35%),
+    linear-gradient(135deg,#11182e,#202a55 60%,#30256d);
+  color:white;
+  padding:34px 28px 42px;
+  position:relative;
+  overflow:hidden;
+}
+
+.header:after{
+  content:"";
+  position:absolute;
+  width:500px;
+  height:500px;
+  right:-180px;
+  top:-250px;
+  border-radius:50%;
+  background:rgba(255,255,255,.04);
+}
+
+.header-inner{
+  max-width:1400px;
+  margin:auto;
+  position:relative;
+  z-index:1;
+}
+
+.brand{
+  display:flex;
+  gap:18px;
+  align-items:center;
+}
+
+.logo{
+  width:58px;
+  height:58px;
+  display:grid;
+  place-items:center;
+  border-radius:17px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.15);
+  font-size:28px;
+  backdrop-filter:blur(10px);
+}
+
+h1{
+  margin:0;
+  font-size:34px;
+  letter-spacing:-1.2px;
+}
+
+.subtitle{
+  margin:5px 0 0;
+  color:#bdc6e5;
+  font-size:15px;
+}
+
+.header-badge{
+  position:absolute;
+  right:0;
+  top:5px;
+  padding:10px 16px;
+  border:1px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.08);
+  border-radius:999px;
+  color:#e4e7ff;
+  font-size:13px;
+}
+
+/* ---------------- PIPELINE ---------------- */
+
+.pipeline{
+  max-width:1400px;
+  margin:-24px auto 0;
+  padding:0 20px;
+  position:relative;
+  z-index:5;
+}
+
+.pipeline-inner{
+  background:white;
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  border-radius:20px;
+  display:flex;
+  align-items:stretch;
+  overflow:auto;
+}
+
+.pipe-step{
+  min-width:145px;
+  flex:1;
+  padding:18px 12px;
+  text-align:center;
+  position:relative;
+  cursor:pointer;
+  transition:.2s;
+  border-right:1px solid var(--line);
+}
+
+.pipe-step:last-child{
+  border-right:0;
+}
+
+.pipe-step:hover{
+  background:#f8f7ff;
+}
+
+.pipe-step.active{
+  background:#f2f0ff;
+}
+
+.pipe-number{
+  width:31px;
+  height:31px;
+  border-radius:50%;
+  background:#eef0f7;
+  display:grid;
+  place-items:center;
+  margin:0 auto 7px;
+  font-size:13px;
+  font-weight:800;
+  color:#5e6780;
+}
+
+.pipe-step.active .pipe-number{
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:white;
+  box-shadow:0 6px 16px rgba(99,91,255,.3);
+}
+
+.pipe-title{
+  font-size:12px;
+  font-weight:800;
+}
+
+.pipe-desc{
+  color:var(--muted);
+  font-size:10px;
+  margin-top:4px;
+}
+
+/* ---------------- MAIN ---------------- */
+
+.container{
+  max-width:1400px;
+  margin:28px auto 60px;
+  padding:0 20px;
+}
+
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  margin:30px 0 15px;
+}
+
+.section-title h2{
+  margin:0;
+  font-size:20px;
+  letter-spacing:-.4px;
+}
+
+.section-title p{
+  margin:4px 0 0;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.grid{
+  display:grid;
+  gap:16px;
+}
+
+.grid-3{
+  grid-template-columns:1fr 1.5fr 1fr;
+}
+
+.grid-4{
+  grid-template-columns:1fr 1fr 1fr 1fr;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:0 5px 18px rgba(30,40,70,.035);
+  overflow:hidden;
+}
+
+.card-head{
+  padding:17px 18px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  gap:11px;
+}
+
+.card-icon{
+  width:36px;
+  height:36px;
+  border-radius:11px;
+  display:grid;
+  place-items:center;
+  background:#f0efff;
+  color:var(--primary);
+  font-size:18px;
+}
+
+.card-head h3{
+  margin:0;
+  font-size:14px;
+}
+
+.card-head p{
+  margin:3px 0 0;
+  font-size:11px;
+  color:var(--muted);
+}
+
+.card-body{
+  padding:18px;
+}
+
+/* ---------------- DOCUMENTS ---------------- */
+
+.document{
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:13px;
+  margin-bottom:9px;
+  cursor:pointer;
+  transition:.18s;
+}
+
+.document:hover{
+  border-color:#b9b3ff;
+  background:#faf9ff;
+}
+
+.document.selected{
+  border-color:var(--primary);
+  background:#f6f4ff;
+  box-shadow:0 0 0 2px rgba(99,91,255,.08);
+}
+
+.doc-name{
+  font-size:12px;
+  font-weight:750;
+}
+
+.doc-meta{
+  color:var(--muted);
+  font-size:10px;
+  margin-top:4px;
+}
+
+.preview{
+  padding:16px;
+  border-radius:12px;
+  background:#f7f8fb;
+  border:1px solid var(--line);
+  color:#4e596d;
+  line-height:1.65;
+  font-size:13px;
+}
+
+.highlight{
+  background:#e9e6ff;
+  color:#4b43b9;
+  padding:1px 4px;
+  border-radius:4px;
+}
+
+/* ---------------- CHUNKS ---------------- */
+
+.chunk{
+  border:1px solid var(--line);
+  border-radius:11px;
+  padding:12px;
+  margin-bottom:8px;
+  transition:.25s;
+}
+
+.chunk.relevant{
+  border-color:#86efac;
+  background:#f0fdf4;
+}
+
+.chunk-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:5px;
+}
+
+.chunk-id{
+  font-size:10px;
+  font-weight:800;
+  color:#69738a;
+}
+
+.score{
+  font-size:10px;
+  font-weight:800;
+  color:var(--green);
+  background:#dcfce7;
+  padding:3px 7px;
+  border-radius:999px;
+}
+
+.chunk-text{
+  font-size:11px;
+  line-height:1.45;
+  color:#566176;
+}
+
+/* ---------------- VECTOR ---------------- */
+
+.vector-box{
+  background:#111827;
+  color:#b7c4ff;
+  border-radius:12px;
+  padding:15px;
+  font-family:"SFMono-Regular",Consolas,monospace;
+  font-size:11px;
+  line-height:1.7;
+  overflow:hidden;
+}
+
+.vector-label{
+  color:#8b95aa;
+  font-family:inherit;
+  font-size:10px;
+  margin-bottom:5px;
+}
+
+.dimensions{
+  margin-top:10px;
+  color:#7dd3fc;
+  font-size:10px;
+}
+
+.db-record{
+  border:1px dashed #cfd5e2;
+  border-radius:11px;
+  padding:12px;
+  margin-top:10px;
+  font-size:10px;
+  color:#687389;
+}
+
+.db-record strong{
+  color:#30394d;
+}
+
+/* ---------------- QUESTION ---------------- */
+
+.question-box{
+  margin-top:10px;
+}
+
+textarea{
+  width:100%;
+  min-height:92px;
+  resize:vertical;
+  border:1px solid #d9deea;
+  border-radius:12px;
+  padding:14px;
+  font:inherit;
+  font-size:13px;
+  outline:none;
+  color:var(--text);
+  transition:.2s;
+}
+
+textarea:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(99,91,255,.09);
+}
+
+.btn{
+  width:100%;
+  margin-top:10px;
+  border:0;
+  border-radius:12px;
+  padding:13px 16px;
+  font-weight:800;
+  font-size:13px;
+  color:white;
+  cursor:pointer;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  box-shadow:0 8px 18px rgba(99,91,255,.22);
+  transition:.18s;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+}
+
+.example{
+  display:inline-block;
+  border:1px solid var(--line);
+  background:#fafbfe;
+  padding:7px 9px;
+  border-radius:999px;
+  font-size:10px;
+  color:#59647a;
+  margin:6px 4px 0 0;
+  cursor:pointer;
+}
+
+.example:hover{
+  border-color:#b8b1ff;
+  color:#5148ca;
+}
+
+/* ---------------- RETRIEVAL ---------------- */
+
+.result{
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:9px;
+  display:grid;
+  grid-template-columns:30px 1fr auto;
+  gap:10px;
+  align-items:center;
+}
+
+.rank{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:#f0efff;
+  color:#5a50d1;
+  display:grid;
+  place-items:center;
+  font-size:11px;
+  font-weight:800;
+}
+
+.result-title{
+  font-size:11px;
+  font-weight:800;
+}
+
+.result-text{
+  margin-top:4px;
+  font-size:10px;
+  color:var(--muted);
+  line-height:1.4;
+}
+
+.bar{
+  width:70px;
+  height:6px;
+  background:#edf0f5;
+  border-radius:99px;
+  overflow:hidden;
+  margin-top:5px;
+}
+
+.bar span{
+  display:block;
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,var(--primary),#22c55e);
+  transition:1s;
+}
+
+/* ---------------- AUGMENT ---------------- */
+
+.prompt{
+  background:#111827;
+  color:#dce3f8;
+  border-radius:12px;
+  padding:15px;
+  font-family:"SFMono-Regular",Consolas,monospace;
+  font-size:10px;
+  line-height:1.65;
+  white-space:pre-wrap;
+}
+
+.prompt .system{
+  color:#a5b4fc;
+}
+
+.prompt .context{
+  color:#86efac;
+}
+
+.prompt .question{
+  color:#7dd3fc;
+}
+
+/* ---------------- ANSWER ---------------- */
+
+.answer{
+  background:#f0fdf4;
+  border:1px solid #bbf7d0;
+  border-radius:13px;
+  padding:16px;
+  color:#245437;
+  font-size:13px;
+  line-height:1.6;
+}
+
+.answer-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:850;
+  color:#166534;
+  margin-bottom:8px;
+}
+
+.status{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:#dcfce7;
+  color:#166534;
+  padding:7px 10px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:800;
+  margin-top:10px;
+}
+
+/* ---------------- EXPLANATION ---------------- */
+
+.explanation{
+  background:linear-gradient(135deg,#f5f3ff,#eef7ff);
+  border:1px solid #dedaff;
+  border-radius:16px;
+  padding:20px;
+  margin-top:18px;
+}
+
+.explanation h3{
+  margin:0 0 8px;
+  font-size:15px;
+}
+
+.explanation p{
+  margin:0;
+  color:#59647a;
+  font-size:12px;
+  line-height:1.65;
+}
+
+.callout{
+  border-left:4px solid var(--primary);
+  padding:11px 14px;
+  background:white;
+  border-radius:0 10px 10px 0;
+  margin-top:14px;
+  font-size:12px;
+  color:#515c72;
+}
+
+/* ---------------- FLOW ---------------- */
+
+.flow{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  overflow:auto;
+  padding:4px 0;
+}
+
+.flow-item{
+  flex-shrink:0;
+  border:1px solid var(--line);
+  background:white;
+  border-radius:10px;
+  padding:9px 12px;
+  font-size:10px;
+  font-weight:750;
+}
+
+.arrow{
+  color:#9aa3b5;
+}
+
+/* ---------------- TOAST ---------------- */
+
+.toast{
+  position:fixed;
+  bottom:24px;
+  left:50%;
+  transform:translate(-50%,20px);
+  background:#111827;
+  color:white;
+  padding:11px 17px;
+  border-radius:999px;
+  font-size:12px;
+  opacity:0;
+  pointer-events:none;
+  transition:.3s;
+  z-index:99;
+  box-shadow:0 10px 30px rgba(0,0,0,.18);
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+/* ---------------- MODAL ---------------- */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(10,15,30,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:100;
+  backdrop-filter:blur(5px);
+}
+
+.modal.open{
+  display:flex;
+}
+
+.modal-card{
+  width:min(700px,100%);
+  background:white;
+  border-radius:20px;
+  box-shadow:0 25px 70px rgba(0,0,0,.25);
+  overflow:hidden;
+}
+
+.modal-head{
+  padding:20px;
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid var(--line);
+}
+
+.close{
+  border:0;
+  background:#f1f3f7;
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  cursor:pointer;
+}
+
+.modal-body{
+  padding:22px;
+  max-height:70vh;
+  overflow:auto;
+}
+
+.step-detail{
+  margin-bottom:18px;
+}
+
+.step-detail h4{
+  margin:0 0 5px;
+  font-size:13px;
+}
+
+.step-detail p{
+  margin:0;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.6;
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+
+@media(max-width:1050px){
+  .grid-3,
+  .grid-4{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .header-badge{
+    display:none;
+  }
+}
+
+@media(max-width:700px){
+  h1{
+    font-size:27px;
+  }
+
+  .grid-3,
+  .grid-4{
+    grid-template-columns:1fr;
+  }
+
+  .pipeline-inner{
+    border-radius:15px;
+  }
+
+  .pipe-step{
+    min-width:125px;
+  }
+
+  .header{
+    padding:25px 18px 35px;
+  }
+
+  .container{
+    padding:0 14px;
+  }
+
+  .pipeline{
+    padding:0 12px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+
+<header class="header">
+  <div class="header-inner">
+
+    <div class="brand">
+      <div class="logo">◉</div>
+
+      <div>
+        <h1>RAG Simulator</h1>
+        <div class="subtitle">
+          See how Retrieval-Augmented Generation works, step by step.
+        </div>
+      </div>
+    </div>
+
+    <div class="header-badge">
+      Example: Bloomberg-like financial assistant
+    </div>
+
+  </div>
+</header>
+
+
+<!-- ================= PIPELINE ================= -->
+
+<div class="pipeline">
+
+  <div class="pipeline-inner">
+
+    <div class="pipe-step active" data-step="1">
+      <div class="pipe-number">1</div>
+      <div class="pipe-title">Ingest & Chunk</div>
+      <div class="pipe-desc">Break data into pieces</div>
+    </div>
+
+    <div class="pipe-step" data-step="2">
+      <div class="pipe-number">2</div>
+      <div class="pipe-title">Embed</div>
+      <div class="pipe-desc">Convert text → vectors</div>
+    </div>
+
+    <div class="pipe-step" data-step="3">
+      <div class="pipe-number">3</div>
+      <div class="pipe-title">Store</div>
+      <div class="pipe-desc">Vector database</div>
+    </div>
+
+    <div class="pipe-step" data-step="4">
+      <div class="pipe-number">4</div>
+      <div class="pipe-title">Question</div>
+      <div class="pipe-desc">User asks naturally</div>
+    </div>
+
+    <div class="pipe-step" data-step="5">
+      <div class="pipe-number">5</div>
+      <div class="pipe-title">Retrieve</div>
+      <div class="pipe-desc">Find relevant chunks</div>
+    </div>
+
+    <div class="pipe-step" data-step="6">
+      <div class="pipe-number">6</div>
+      <div class="pipe-title">Augment</div>
+      <div class="pipe-desc">Add context</div>
+    </div>
+
+    <div class="pipe-step" data-step="7">
+      <div class="pipe-number">7</div>
+      <div class="pipe-title">Generate</div>
+      <div class="pipe-desc">LLM answers</div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="container">
+
+  <div class="section-title">
+    <div>
+      <h2>1. Build the Knowledge Base</h2>
+      <p>
+        Imagine Bloomberg has millions of financial documents. We cannot send all of them to the LLM.
+      </p>
+    </div>
+  </div>
+
+
+  <!-- DOCUMENT / CHUNK / EMBEDDING -->
+
+  <section class="grid grid-3">
+
+    <!-- DOCUMENTS -->
+
+    <div class="card">
+
+      <div class="card-head">
+        <div class="card-icon">▤</div>
+        <div>
+          <h3>Knowledge Base</h3>
+          <p>Documents available to the system</p>
+        </div>
+      </div>
+
+      <div class="card-body" id="documents"></div>
+
+    </div>
+
+
+    <!-- PREVIEW + CHUNKS -->
+
+    <div class="card">
+
+      <div class="card-head">
+        <div class="card-icon">✂</div>
+        <div>
+          <h3 id="selectedTitle">Selected Document</h3>
+          <p>Large document → smaller searchable chunks</p>
+        </div>
+      </div>
+
+      <div class="card-body">
+
+        <div class="preview" id="preview"></div>
+
+        <div style="height:14px"></div>
+
+        <div style="font-size:12px;font-weight:800;margin-bottom:8px;">
+          Document Chunks
+        </div>
+
+        <div id="chunks"></div>
+
+      </div>
+
+    </div>
+
+
+    <!-- EMBEDDING + DB -->
+
+    <div>
+
+      <div class="card">
+
+        <div class="card-head">
+          <div class="card-icon">◇</div>
+          <div>
+            <h3>Chunk Embedding</h3>
+            <p>Text converted into numerical representation</p>
+          </div>
+        </div>
+
+        <div class="card-body">
+
+          <div class="vector-label">
+            Example: Chunk 1 embedding
+          </div>
+
+          <div class="vector-box" id="chunkVector"></div>
+
+          <div class="dimensions">
+            In real systems: hundreds or thousands of dimensions
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div style="height:14px"></div>
+
+
+      <div class="card">
+
+        <div class="card-head">
+          <div class="card-icon">▣</div>
+          <div>
+            <h3>Vector Database</h3>
+            <p>Vector + original text + metadata</p>
+          </div>
+        </div>
+
+        <div class="card-body">
+
+          <div class="db-record">
+            <strong>Vector</strong><br>
+            [−0.12, 0.43, 0.27, −0.81, ...]
+            <br><br>
+
+            <strong>Text</strong><br>
+            "Apple reported strong financial..."
+            <br><br>
+
+            <strong>Metadata</strong><br>
+            source: Apple Q2 report<br>
+            chunk_id: 1
+          </div>
+
+          <div class="status">
+            ✓ Stored in vector database
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= QUESTION ================= -->
+
+  <div class="section-title">
+    <div>
+      <h2>2. Ask the Knowledge Base</h2>
+      <p>
+        Notice: the question is also converted into an embedding before retrieval.
+      </p>
+    </div>
+  </div>
+
+
+  <section class="grid grid-4">
+
+    <!-- QUESTION -->
+
+    <div class="card">
+
+      <div class="card-head">
+        <div class="card-icon">?</div>
+        <div>
+          <h3>Your Question</h3>
+          <p>Ask in natural language</p>
+        </div>
+      </div>
+
+      <div class="card-body">
+
+        <textarea id="question">What was Apple's revenue in Q2 2024?</textarea>
+
+        <button class="btn" id="runBtn">
+          ▶ Run RAG Pipeline
+        </button>
+
+        <div style="margin-top:14px;font-size:10px;color:#7b8496;">
+          Try an example:
+        </div>
+
+        <div class="example"
+             onclick="setQuestion('What was Apple\\'s revenue in Q2 2024?')">
+          Apple's Q2 revenue?
+        </div>
+
+        <div class="example"
+             onclick="setQuestion('How much did Apple spend on share buybacks?')">
+          Share buybacks?
+        </div>
+
+        <div class="example"
+             onclick="setQuestion('How did Services revenue compare with iPhone revenue?')">
+          Services vs iPhone?
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- QUESTION EMBEDDING -->
+
+    <div class="card">
+
+      <div class="card-head">
+        <div class="card-icon">◇</div>
+        <div>
+          <h3>Question Embedding</h3>
+          <p>Your question → vector</p>
+        </div>
+      </div>
+
+      <div class="card-body">
+
+        <div class="vector-label">
+          Question vector
+        </div>
+
+        <div class="vector-box" id="questionVector">
+          [0.08, 0.41, 0.31, −0.27,<br>
+           0.62, 0.11, −0.33, 0.49,<br>
+           ...]
+        </div>
+
+        <div class="explanation" style="margin-top:15px;padding:13px;">
+          <h3 style="font-size:12px;">Why?</h3>
+          <p style="font-size:10px;">
+            We need a numerical representation of the question so
+            the system can compare it with stored chunk vectors.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- RETRIEVAL -->
+
+    <div class="card">
+
+      <div class="card-head">
+        <div class="card-icon">⌕</div>
+        <div>
+          <h3>Retrieval</h3>
+          <p>Find the most relevant chunks</p>
+        </div>
+      </div>
+
+      <div class="card-body">
+
+        <div id="results"></div>
+
+        <div class="status">
+          ✓ Higher score = more relevant
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- AUGMENT / GENERATE -->
+
+    <div class="card">
+
+      <div class="card-head">
+        <div class="card-icon">✦</div>
+        <div>
+          <h3>Augment → Generate</h3>
+          <p>Retrieved context is given to the LLM</p>
+        </div>
+      </div>
+
+      <div class="card-body">
+
+        <div class="prompt" id="prompt">
+<span class="system">SYSTEM:</span>
+Answer the user's question using the provided context.
+
+<span class="context">CONTEXT:</span>
+[Retrieved financial information will appear here]
+
+<span class="question">QUESTION:</span>
+What was Apple's revenue in Q2 2024?
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="answer" id="answer">
+
+          <div class="answer-title">
+            <span>✓</span>
+            Final Answer
+          </div>
+
+          Run the pipeline to generate an answer.
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= WHAT HAPPENED ================= -->
+
+  <div class="section-title">
+    <div>
+      <h2>What just happened?</h2>
+      <p>The complete RAG pipeline in one view.</p>
+    </div>
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-body">
+
+      <div class="flow">
+
+        <div class="flow-item">📄 Documents</div>
+        <div class="arrow">→</div>
+
+        <div class="flow-item">✂ Chunk</div>
+        <div class="arrow">→</div>
+
+        <div class="flow-item">◇ Embed</div>
+        <div class="arrow">→</div>
+
+        <div class="flow-item">▣ Store</div>
+        <div class="arrow">→</div>
+
+        <div class="flow-item">❓ Question</div>
+        <div class="arrow">→</div>
+
+        <div class="flow-item">◇ Embed Question</div>
+        <div class="arrow">→</div>
+
+        <div class="flow-item">⌕ Retrieve</div>
+        <div class="arrow">→</div>
+
+        <div class="flow-item">📄 Augment</div>
+        <div class="arrow">→</div>
+
+        <div class="flow-item">✦ Generate</div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= KEY LEARNINGS ================= -->
+
+  <div class="grid grid-3" style="margin-top:18px;">
+
+    <div class="card">
+
+      <div class="card-body">
+
+        <h3 style="font-size:14px;margin-top:0;">
+          💡 Key Takeaways
+        </h3>
+
+        <ul style="padding-left:18px;color:#657086;font-size:11px;line-height:1.8;">
+          <li>RAG does not send the entire knowledge base to the LLM.</li>
+          <li>Documents are split into smaller chunks.</li>
+          <li>Chunks become vector embeddings.</li>
+          <li>The vector database stores vectors + text + metadata.</li>
+          <li>The question is also converted into a vector.</li>
+          <li>Only relevant chunks are retrieved.</li>
+          <li>The LLM generates using the retrieved context.</li>
+        </ul>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="card-body">
+
+        <h3 style="font-size:14px;margin-top:0;">
+          🎯 Why RAG Matters
+        </h3>
+
+        <ul style="padding-left:18px;color:#657086;font-size:11px;line-height:1.8;">
+          <li>Works with very large knowledge bases.</li>
+          <li>Reduces the amount of context sent to the LLM.</li>
+          <li>Can provide answers grounded in company data.</li>
+          <li>Knowledge can be updated without retraining the LLM.</li>
+          <li>Can combine semantic search with databases.</li>
+        </ul>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="card-body">
+
+        <h3 style="font-size:14px;margin-top:0;">
+          🧠 Important Distinction
+        </h3>
+
+        <div class="callout">
+          <strong>Vector search is not the same as a database query.</strong>
+          <br><br>
+          "What is Apple's revenue?" may be better answered with
+          structured financial data.
+          <br><br>
+          "Why did Apple's revenue growth slow?"
+          may require retrieving reports, commentary and analysis.
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= MENTAL MODEL ================= -->
+
+  <div class="explanation">
+
+    <h3>Your mental model should be:</h3>
+
+    <p style="font-size:14px;color:#30394d;">
+      <strong>
+        Don't give the LLM the entire library.
+        Find the right books/pages first, then give the relevant pages to the LLM.
+      </strong>
+    </p>
+
+    <div class="callout">
+
+      <strong>Library analogy</strong><br><br>
+
+      Bloomberg = enormous library<br>
+      Documents = books<br>
+      Chunks = pages/sections<br>
+      Embeddings = numerical fingerprints of meaning<br>
+      Vector database = searchable map of those fingerprints<br>
+      User question = "What am I looking for?"<br>
+      Retrieval = librarian finding relevant pages<br>
+      Augmentation = putting those pages on the desk<br>
+      LLM = expert reading those pages and explaining them
+
+    </div>
+
+  </div>
+
+</main>
+
+
+<!-- ================= MODAL ================= -->
+
+<div class="modal" id="modal">
+
+  <div class="modal-card">
+
+    <div class="modal-head">
+
+      <div>
+        <strong id="modalTitle">RAG Step</strong>
+        <div style="font-size:11px;color:#7a8498;margin-top:4px;">
+          Understand what happens at this stage
+        </div>
+      </div>
+
+      <button class="close" onclick="closeModal()">×</button>
+
+    </div>
+
+    <div class="modal-body" id="modalBody"></div>
+
+  </div>
+
+</div>
+
+
+<div class="toast" id="toast">
+  RAG pipeline completed
+</div>
+
+
+<script>
+
+/* =========================================================
+   RAG SIMULATOR
+   This is an educational simulation.
+   No actual embedding model or LLM API is being called.
+========================================================= */
+
+
+/* ---------------- DOCUMENT DATA ---------------- */
+
+const documents = [
+
+  {
+    id:"apple",
+    name:"Apple Q2 2024 Earnings Report",
+    meta:"Financial results • Revenue • Profit • Outlook",
+
+    text:
+      "Apple Inc. reported strong financial results for the second quarter of 2024. " +
+      "Revenue reached $90.8 billion, up 4% year-over-year. " +
+      "Net income was $23.6 billion, and earnings per share (EPS) came in at $1.53. " +
+      "Services revenue reached $23.9 billion, up 14% year-over-year. " +
+      "iPhone revenue was $45.9 billion, Mac revenue was $7.5 billion, and iPad revenue was $5.6 billion. " +
+      "Apple also announced a $110 billion share buyback program and remained optimistic about the second half of the year.",
+
+    chunks:[
+      "Apple reported strong financial results for the second quarter of 2024. Revenue reached $90.8 billion, up 4% year-over-year.",
+      "Net income was $23.6 billion, and earnings per share (EPS) came in at $1.53.",
+      "Services revenue reached $23.9 billion, up 14% year-over-year.",
+      "iPhone revenue was $45.9 billion, Mac revenue was $7.5 billion, and iPad revenue was $5.6 billion.",
+      "Apple announced a $110 billion share buyback program and remained optimistic about the second half of the year."
+    ]
+  },
+
+  {
+    id:"microsoft",
+    name:"Microsoft FY2024 Annual Report",
+    meta:"Financial performance • Strategy",
+
+    text:
+      "Microsoft reported annual revenue of $245.1 billion for fiscal year 2024. " +
+      "The company continued investing in cloud infrastructure, artificial intelligence and enterprise software.",
+
+    chunks:[
+      "Microsoft reported annual revenue of $245.1 billion for fiscal year 2024.",
+      "The company continued investing in cloud infrastructure.",
+      "Microsoft increased its focus on artificial intelligence and enterprise software."
+    ]
+  },
+
+  {
+    id:"tesla",
+    name:"Tesla Q1 2024 Shareholder Letter",
+    meta:"Deliveries • Revenue • Margins • AI focus",
+
+    text:
+      "Tesla discussed vehicle deliveries, revenue, operating margins and investments in artificial intelligence.",
+
+    chunks:[
+      "Tesla discussed vehicle deliveries during the quarter.",
+      "The company discussed revenue and operating margins.",
+      "Tesla highlighted continued investments in artificial intelligence."
+    ]
+  },
+
+  {
+    id:"markets",
+    name:"Global Markets Commentary",
+    meta:"Interest rates • Inflation • Market outlook",
+
+    text:
+      "Global markets were influenced by interest-rate expectations, inflation data and economic growth forecasts.",
+
+    chunks:[
+      "Global markets were influenced by interest-rate expectations.",
+      "Inflation data remained an important driver for markets.",
+      "Economic growth forecasts influenced investor sentiment."
+    ]
+  }
+
+];
+
+
+/* ---------------- STATE ---------------- */
+
+let selectedDocument = documents[0];
+
+let retrievalResults = [];
+
+
+/* ---------------- VECTOR SIMULATION ---------------- */
+
+/*
+   Real embedding models produce vectors based on semantic
+   meaning. Here we generate deterministic-looking vectors
+   purely for visualization.
+*/
+
+function fakeVector(seed){
+
+  let values = [];
+
+  let hash = 0;
+
+  for(let i=0;i<seed.length;i++){
+    hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+    hash |= 0;
+  }
+
+  for(let i=0;i<8;i++){
+
+    const x =
+      Math.sin(hash * (i + 1) * 0.0007) * 0.8;
+
+    values.push(Number(x.toFixed(2)));
+
+  }
+
+  return values;
+}
+
+
+function vectorHTML(vector){
+
+  return "[" +
+    vector.map(v =>
+      (v >= 0 ? "" : "−") + Math.abs(v).toFixed(2)
+    ).join(", ") +
+    ", ...]";
+}
+
+
+/* ---------------- RENDER DOCUMENTS ---------------- */
+
+function renderDocuments(){
+
+  const container =
+    document.getElementById("documents");
+
+  container.innerHTML = "";
+
+  documents.forEach(doc => {
+
+    const div =
+      document.createElement("div");
+
+    div.className =
+      "document " +
+      (doc.id === selectedDocument.id ? "selected" : "");
+
+    div.innerHTML = `
+      <div class="doc-name">${doc.name}</div>
+      <div class="doc-meta">${doc.meta}</div>
+    `;
+
+    div.onclick = () => {
+
+      selectedDocument = doc;
+
+      renderDocuments();
+      renderDocument();
+
+      showToast(
+        "Selected: " + doc.name
+      );
+
+    };
+
+    container.appendChild(div);
+
+  });
+
+}
+
+
+/* ---------------- RENDER DOCUMENT ---------------- */
+
+function renderDocument(){
+
+  document.getElementById("selectedTitle")
+    .textContent = selectedDocument.name;
+
+  document.getElementById("preview")
+    .textContent = selectedDocument.text;
+
+  const chunks =
+    document.getElementById("chunks");
+
+  chunks.innerHTML = "";
+
+  selectedDocument.chunks.forEach((text,i) => {
+
+    const div =
+      document.createElement("div");
+
+    div.className =
+      "chunk";
+
+    div.innerHTML = `
+      <div class="chunk-top">
+        <div class="chunk-id">CHUNK ${i+1}</div>
+      </div>
+
+      <div class="chunk-text">
+        ${text}
+      </div>
+    `;
+
+    div.onclick = () => {
+
+      document.getElementById("chunkVector")
+        .innerHTML =
+        vectorHTML(
+          fakeVector(text)
+        );
+
+      showToast(
+        "Embedding generated for Chunk " + (i+1)
+      );
+
+    };
+
+    chunks.appendChild(div);
+
+  });
+
+  document.getElementById("chunkVector")
+    .innerHTML =
+    vectorHTML(
+      fakeVector(
+        selectedDocument.chunks[0]
+      )
+    );
+
+}
+
+
+/* ---------------- QUESTION ---------------- */
+
+function setQuestion(text){
+
+  document.getElementById("question")
+    .value = text;
+
+  document.getElementById("question")
+    .focus();
+
+}
+
+
+/* ---------------- SIMPLE SEMANTIC MATCHING ---------------- */
+
+/*
+   This is NOT a real embedding similarity calculation.
+
+   Instead, it uses keyword overlap so the simulator can
+   demonstrate retrieval without requiring an API/backend.
+*/
+
+function tokenize(text){
+
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9$%.]+/g," ")
+    .split(/\s+/)
+    .filter(word =>
+      word.length > 2
+    );
+
+}
+
+
+function calculateScore(question,text){
+
+  const q =
+    new Set(tokenize(question));
+
+  const t =
+    tokenize(text);
+
+  let matches = 0;
+
+  t.forEach(word => {
+
+    if(q.has(word)){
+      matches++;
+    }
+
+  });
+
+  const phraseBonus =
+    question.toLowerCase()
+      .includes("revenue") &&
+    text.toLowerCase()
+      .includes("revenue")
+      ? .18 : 0;
+
+  const score =
+    Math.min(
+      .99,
+      .35 +
+      matches * .08 +
+      phraseBonus
+    );
+
+  return Number(score.toFixed(2));
+
+}
+
+
+/* ---------------- RETRIEVAL ---------------- */
+
+function retrieve(question){
+
+  let allChunks = [];
+
+  documents.forEach(doc => {
+
+    doc.chunks.forEach((text,index) => {
+
+      allChunks.push({
+
+        document:doc,
+        index:index,
+        text:text,
+
+        score:
+          calculateScore(
+            question,
+            text
+          )
+
+      });
+
+    });
+
+  });
+
+  allChunks.sort(
+    (a,b) => b.score - a.score
+  );
+
+  return allChunks.slice(0,3);
+
+}
+
+
+function renderResults(){
+
+  const container =
+    document.getElementById("results");
+
+  container.innerHTML = "";
+
+  retrievalResults.forEach(
+    (result,index) => {
+
+      const div =
+        document.createElement("div");
+
+      div.className =
+        "result";
+
+      div.innerHTML = `
+
+        <div class="rank">
+          ${index+1}
+        </div>
+
+        <div>
+
+          <div class="result-title">
+            Chunk ${result.index+1}
+            • ${result.document.name}
+          </div>
+
+          <div class="result-text">
+            ${result.text}
+          </div>
+
+          <div class="bar">
+            <span
+              style="width:${result.score*100}%">
+            </span>
+          </div>
+
+        </div>
+
+        <div class="score">
+          ${result.score}
+        </div>
+      `;
+
+      container.appendChild(div);
+
+      setTimeout(() => {
+
+        const bar =
+          div.querySelector(".bar span");
+
+        if(bar){
+          bar.style.width =
+            (result.score * 100) + "%";
+        }
+
+      },100);
+
+    }
+  );
+
+}
+
+
+/* ---------------- QUESTION EMBEDDING ---------------- */
+
+function updateQuestionVector(question){
+
+  const vector =
+    fakeVector(question);
+
+  document.getElementById("questionVector")
+    .innerHTML =
+    vectorHTML(vector);
+
+}
+
+
+/* ---------------- AUGMENTATION ---------------- */
+
+function buildPrompt(question){
+
+  const context =
+    retrievalResults
+      .map((r,i) =>
+        `[Source ${i+1}]
+${r.text}`
+      )
+      .join("\n\n");
+
+  return `<span class="system">SYSTEM:</span>
+You are a financial information assistant.
+Answer using the retrieved context.
+If the context does not contain enough information,
+say that you don't have enough information.
+
+<span class="context">RETRIEVED CONTEXT:</span>
+${escapeHTML(context)}
+
+<span class="question">USER QUESTION:</span>
+${escapeHTML(question)}`;
+
+}
+
+
+function escapeHTML(text){
+
+  return text
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;");
+
+}
+
+
+/* ---------------- GENERATION SIMULATION ---------------- */
+
+function generateAnswer(question){
+
+  const q =
+    question.toLowerCase();
+
+  let answer =
+    "The retrieved Bloomberg-like documents do not contain enough information to confidently answer that question.";
+
+  if(
+    q.includes("revenue") &&
+    q.includes("apple") &&
+    (q.includes("q2") || q.includes("second quarter"))
+  ){
+
+    answer =
+      "According to the retrieved financial document, Apple reported <strong>$90.8 billion</strong> in revenue for Q2 2024, representing <strong>4% year-over-year growth</strong>.";
+
+  }
+
+  else if(
+    q.includes("buyback") ||
+    q.includes("buy back") ||
+    q.includes("share repurchase")
+  ){
+
+    answer =
+      "According to the retrieved document, Apple announced a <strong>$110 billion share buyback program</strong>.";
+
+  }
+
+  else if(
+    q.includes("services") &&
+    q.includes("iphone")
+  ){
+
+    answer =
+      "Apple's Services revenue was <strong>$23.9 billion</strong>, while iPhone revenue was <strong>$45.9 billion</strong>. Services grew 14% year-over-year.";
+
+  }
+
+  else if(
+    q.includes("microsoft") &&
+    q.includes("revenue")
+  ){
+
+    answer =
+      "The retrieved Microsoft annual report states that Microsoft reported <strong>$245.1 billion</strong> in revenue for fiscal year 2024.";
+
+  }
+
+  else if(
+    q.includes("tesla") &&
+    q.includes("ai")
+  ){
+
+    answer =
+      "The retrieved Tesla shareholder letter discusses continued investment in <strong>artificial intelligence</strong>.";
+
+  }
+
+  return answer;
+
+}
+
+
+/* ---------------- RUN PIPELINE ---------------- */
+
+function runPipeline(){
+
+  const question =
+    document.getElementById("question")
+      .value.trim();
+
+  if(!question){
+
+    showToast(
+      "Please enter a question first."
+    );
+
+    return;
+
+  }
+
+
+  /* STEP 1 — Question embedding */
+
+  updateQuestionVector(question);
+
+
+  /* STEP 2 — Retrieval */
+
+  retrievalResults =
+    retrieve(question);
+
+  renderResults();
+
+
+  /* STEP 3 — Augmentation */
+
+  document.getElementById("prompt")
+    .innerHTML =
+    buildPrompt(question);
+
+
+  /* STEP 4 — Generation */
+
+  const answer =
+    generateAnswer(question);
+
+  document.getElementById("answer")
+    .innerHTML = `
+
+      <div class="answer-title">
+        <span>✓</span>
+        Final Answer
+      </div>
+
+      ${answer}
+
+      <div style="
+        margin-top:12px;
+        font-size:10px;
+        color:#52735c;
+      ">
+        Answer generated using the retrieved context above.
+      </div>
+
+      <div class="status">
+        ✓ Grounded in retrieved information
+      </div>
+    `;
+
+
+  /* Highlight relevant chunks */
+
+  document.querySelectorAll(".chunk")
+    .forEach(el =>
+      el.classList.remove("relevant")
+    );
+
+
+  retrievalResults.forEach(result => {
+
+    if(
+      result.document.id ===
+      selectedDocument.id
+    ){
+
+      const chunkElements =
+        document.querySelectorAll(".chunk");
+
+      if(chunkElements[result.index]){
+        chunkElements[result.index]
+          .classList.add("relevant");
+      }
+
+    }
+
+  });
+
+
+  /* Scroll toward results */
+
+  document.getElementById("results")
+    .scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
+
+
+  showToast(
+    "✓ RAG pipeline completed"
+  );
+
+}
+
+
+/* ---------------- TOAST ---------------- */
+
+function showToast(message){
+
+  const toast =
+    document.getElementById("toast");
+
+  toast.textContent = message;
+
+  toast.classList.add("show");
+
+  setTimeout(() => {
+
+    toast.classList.remove("show");
+
+  },2200);
+
+}
+
+
+/* ---------------- PIPELINE EXPLANATIONS ---------------- */
+
+const stepInfo = {
+
+  1:{
+    title:"Step 1 — Ingest & Chunk",
+    content:`
+      <div class="step-detail">
+        <h4>What happens?</h4>
+        <p>
+          Large documents are collected and split into smaller
+          pieces called <strong>chunks</strong>.
+          Chunking makes retrieval more precise because the system
+          can retrieve a relevant section instead of an entire document.
+        </p>
+      </div>
+
+      <div class="step-detail">
+        <h4>Example</h4>
+        <p>
+          Instead of retrieving an entire 100-page annual report,
+          the system might retrieve the paragraph containing
+          Apple's revenue.
+        </p>
+      </div>
+
+      <div class="callout">
+        Think: <strong>Book → Pages/Sections</strong>
+      </div>
+    `
+  },
+
+  2:{
+    title:"Step 2 — Create Embeddings",
+    content:`
+      <div class="step-detail">
+        <h4>What happens?</h4>
+        <p>
+          An embedding model converts each chunk of text into a
+          numerical vector. The vector represents aspects of the
+          text's semantic meaning.
+        </p>
+      </div>
+
+      <div class="step-detail">
+        <h4>Important</h4>
+        <p>
+          You don't normally interpret the individual numbers.
+          Their usefulness comes from comparing vectors with one another.
+        </p>
+      </div>
+
+      <div class="callout">
+        Think: <strong>Text → Numerical fingerprint</strong>
+      </div>
+    `
+  },
+
+  3:{
+    title:"Step 3 — Store in Vector Database",
+    content:`
+      <div class="step-detail">
+        <h4>What happens?</h4>
+        <p>
+          The vector is stored together with the original text
+          and useful metadata such as document name, date,
+          page number or chunk ID.
+        </p>
+      </div>
+
+      <div class="callout">
+        Think: <strong>Searchable map of your knowledge</strong>
+      </div>
+    `
+  },
+
+  4:{
+    title:"Step 4 — User Question",
+    content:`
+      <div class="step-detail">
+        <h4>What happens?</h4>
+        <p>
+          A user asks a question naturally. For example:
+          <strong>"What was Apple's revenue in Q2?"</strong>
+        </p>
+      </div>
+
+      <div class="callout">
+        The question does NOT simply go directly to the LLM
+        with the entire knowledge base.
+      </div>
+    `
+  },
+
+  5:{
+    title:"Step 5 — Retrieval",
+    content:`
+      <div class="step-detail">
+        <h4>What happens?</h4>
+        <p>
+          The question is converted into an embedding too.
+          The system then compares the question vector with
+          vectors stored in the vector database.
+        </p>
+      </div>
+
+      <div class="step-detail">
+        <h4>Similarity</h4>
+        <p>
+          Chunks whose vectors are more relevant to the question
+          receive higher similarity scores and are retrieved.
+        </p>
+      </div>
+
+      <div class="callout">
+        Think: <strong>"Find the most relevant pages."</strong>
+      </div>
+    `
+  },
+
+  6:{
+    title:"Step 6 — Augmentation",
+    content:`
+      <div class="step-detail">
+        <h4>What happens?</h4>
+        <p>
+          The retrieved chunks are inserted into the prompt/context
+          sent to the language model.
+        </p>
+      </div>
+
+      <div class="callout">
+        Question + Retrieved Context → LLM
+      </div>
+    `
+  },
+
+  7:{
+    title:"Step 7 — Generation",
+    content:`
+      <div class="step-detail">
+        <h4>What happens?</h4>
+        <p>
+          The LLM reads the question and the retrieved context,
+          then generates a natural-language answer.
+        </p>
+      </div>
+
+      <div class="step-detail">
+        <h4>Important</h4>
+        <p>
+          The LLM isn't necessarily querying the entire Bloomberg
+          database. It is generating an answer using the information
+          that the retrieval system supplied.
+        </p>
+      </div>
+
+      <div class="callout">
+        Retrieved evidence → <strong>LLM → Answer</strong>
+      </div>
+    `
+  }
+
+};
+
+
+/* ---------------- MODAL ---------------- */
+
+function openStep(step){
+
+  const info =
+    stepInfo[step];
+
+  if(!info) return;
+
+  document.getElementById("modalTitle")
+    .textContent = info.title;
+
+  document.getElementById("modalBody")
+    .innerHTML = info.content;
+
+  document.getElementById("modal")
+    .classList.add("open");
+
+}
+
+
+function closeModal(){
+
+  document.getElementById("modal")
+    .classList.remove("open");
+
+}
+
+
+/* ---------------- PIPELINE CLICKS ---------------- */
+
+document.querySelectorAll(".pipe-step")
+  .forEach(step => {
+
+    step.addEventListener("click",() => {
+
+      document.querySelectorAll(".pipe-step")
+        .forEach(s =>
+          s.classList.remove("active")
+        );
+
+      step.classList.add("active");
+
+      openStep(
+        Number(
+          step.dataset.step
+        )
+      );
+
+    });
+
+  });
+
+
+/* ---------------- BUTTON ---------------- */
+
+document.getElementById("runBtn")
+  .addEventListener(
+    "click",
+    runPipeline
+  );
+
+
+/* ---------------- KEYBOARD ---------------- */
+
+document.getElementById("question")
+  .addEventListener(
+    "keydown",
+    event => {
+
+      if(
+        event.ctrlKey &&
+        event.key === "Enter"
+      ){
+
+        runPipeline();
+
+      }
+
+    }
+  );
+
+
+/* ---------------- CLOSE MODAL ---------------- */
+
+document.getElementById("modal")
+  .addEventListener(
+    "click",
+    event => {
+
+      if(
+        event.target.id === "modal"
+      ){
+
+        closeModal();
+
+      }
+
+    }
+  );
+
+
+/* ---------------- INITIALIZE ---------------- */
+
+renderDocuments();
+
+renderDocument();
+
+updateQuestionVector(
+  document.getElementById("question")
+    .value
+);
+
+
+/* Run once initially so the interface
+   is not empty when opened. */
+
+setTimeout(() => {
+
+  runPipeline();
+
+},500);
+
+</script>
+
+</body>
+</html>
